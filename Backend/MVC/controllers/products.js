@@ -4,12 +4,12 @@ const addNewProducts = (req, res) => {
   const { imgsrc, title, description, price, rate, categories_id } = req.body;
 
   const query = `
-    INSERT INTO products (imgsrc, title, description, price, rate, categories_id )
+    INSERT INTO products (imgsrc, title, description, price, rate, categories_id)
     VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING *;
   `;
 
-  const values = [imgsrc, title, description, price, rate, categories_id ];
+  const values = [imgsrc, title, description, price, rate, categories_id];
 
   pool
     .query(query, values)
@@ -21,6 +21,8 @@ const addNewProducts = (req, res) => {
       });
     })
     .catch((err) => {
+      console.log(err);
+
       res.status(500).json({
         success: false,
         message: "Server error",
@@ -143,10 +145,50 @@ const deleteProductById = (req, res) => {
 };
 
 
+const updateProductById = async (req, res) => {
+  const { id } = req.params;
+  const { imgsrc, title, description, price, rate, categories_id } = req.body;
 
+  try {
+    const result = await pool.query(
+      `UPDATE products 
+            SET title = $1, description=$2, imgsrc = $3 , price = $4, rate = $5, categories_id = $6
+            WHERE id = $7
+            RETURNING *`,
+      [imgsrc, title, description, price, rate, categories_id, id]
+    );
+    res.status(200).json({
+      success: true,
+      message: "Updating Done Successfully",
+      result: result.rows,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "server error",
+    });
+  }
+};
+
+const deleteProductById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(`DELETE FROM products WHERE id=$1`, [id]);
+    res.status(200).json({
+      success: true,
+      message: "product deleted successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "server error",
+    });
+  }
+};
 module.exports = {
   addNewProducts,
   getProductById,
   updateProductById,
-  deleteProductById
+  deleteProductById,
 };
