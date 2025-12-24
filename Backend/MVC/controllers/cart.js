@@ -29,7 +29,41 @@ const addToCart = (req, res) => {
       });
     });
 };
+const updateCart = (req, res) => {
+  const { cart_id, products_id } = req.body;
+
+  const query = `
+    UPDATE cart
+    SET products_id = $1
+    WHERE id = $2
+    RETURNING *;
+  `;
+
+  pool
+    .query(query, [products_id, cart_id])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Cart item not found",
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Cart item updated",
+        cartItem: result.rows[0],
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    });
+};
 
 module.exports = {
   addToCart,
+  updateCart
 };
