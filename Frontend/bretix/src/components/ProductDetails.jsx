@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import "./ProductDetails.css";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -21,20 +22,31 @@ const ProductDetails = () => {
       });
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!product) return <p>Product not found</p>;
+  if (loading) return <p className="loading">Loading...</p>;
+  if (!product) return <p className="loading">Product not found</p>;
 
   return (
-    <div className="product-details">
-      <img src={product.imgsrc} alt={product.title} width="300" />
+    <div className="details-container">
+      <div className="details-card">
+        <div className="details-image">
+          <span className="product-badge">New</span>
+          <img src={product.imgsrc} alt={product.title} />
+        </div>
 
-      <h2>{product.title}</h2>
-      <p>{product.description}</p>
+        <div className="details-info">
+          <h2 className="product-title">{product.title}</h2>
+          <p className="product-desc">{product.description}</p>
 
-      <h4>Price: ${product.price}</h4>
-      <p>Rate: ⭐ {product.rate}</p>
+          <div className="rating">⭐ {product.rate}</div>
 
-      <button>Add to cart</button>
+          <div className="details-footer">
+            <span className="price">${product.price}</span>
+            <button className="add-to-cart-btn">
+              <span className="plus-icon">+</span> Cart
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
