@@ -4,6 +4,7 @@ import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const role = localStorage.getItem("role") || null
 
   return (
     <nav className="navbar-container">
@@ -22,18 +23,19 @@ const Navbar = () => {
       </div>
 
       <div className="nav-group right">
-        <button className="nav-btn">Buy by Categories</button>
+        
         <button className="nav-btn">Contact Us</button>
         <div className="auth-group">
-          <button className="nav-btn" onClick={() => navigate("/Login")}>
+          {role === null && <button className="nav-btn" onClick={() => navigate("/Login")}>
             Login
-          </button>
-          <button
+          </button>}
+          {role === null && <button
             className="register-btn"
             onClick={() => navigate("/register")}
           >
             Register
-          </button>
+          </button>}
+          {role !== null && <button onClick={()=>{localStorage.clear(), navigate("/")}}>Logout</button>}
         </div>
       </div>
     </nav>

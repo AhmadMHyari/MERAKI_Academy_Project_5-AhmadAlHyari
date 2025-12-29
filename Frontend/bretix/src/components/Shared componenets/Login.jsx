@@ -38,6 +38,7 @@ function Login() {
         console.log(result.data);
         dispatch(setRole(result.data.role))
         localStorage.setItem("token", result.data.token);
+        localStorage.setItem("role",result.data.role)
         setToken(result.data.token);
         navigate("/");
       })
