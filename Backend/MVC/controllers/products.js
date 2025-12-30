@@ -1,15 +1,15 @@
 const { pool } = require("../models/db");
 
 const addNewProducts = (req, res) => {
-  const { imgsrc, title, description, price, rate, categories_id } = req.body;
+  const { imgsrc, title, description, price, rate, categories_id,store_id } = req.body;
 
   const query = `
-    INSERT INTO products (imgsrc, title, description, price, rate, categories_id)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    INSERT INTO products (imgsrc, title, description, price, rate, categories_id,store_id)
+    VALUES ($1, $2, $3, $4, $5, $6,$7)
     RETURNING *;
   `;
 
-  const values = [imgsrc, title, description, price, rate, categories_id];
+  const values = [imgsrc, title, description, price, rate, categories_id,store_id];
 
   pool
     .query(query, values)

@@ -31,7 +31,7 @@ const Navbar = () => {
         {role === "2" && (
           <button
             className="nav-btn"
-            onClick={() => navigate("stores/:id/StoreManagement")}
+            onClick={() => navigate("stores/StoreManagement")}
           >
             Store Management
           </button>

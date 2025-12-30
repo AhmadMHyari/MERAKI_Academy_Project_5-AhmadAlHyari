@@ -16,7 +16,7 @@ import ProductDetails from "./components/ProductDetails";
 import ImgSlider from "./components/ImgSlider";
 import Stores from "./components/Shared componenets/Stores";
 import Store from "./components/Shared componenets/Store";
-import OwnerStoreManagement from "./components/Owners/StoreManagement";
+import StoreManagement from "./components/Owners/StoreManagement";
 import AddNewProduct from "./components/Owners/AddNewProduct";
 import AllProducts from "./components/Owners/AllProducts";
 import Footer from "./components/Shared componenets/Footer";
@@ -48,16 +48,15 @@ function App() {
         />
         <Route path="/Login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/Products" element={<Products />} />
-                <Route path="/Footer" element={<Footer/>}/>
-
+        <Route path="/Products" element={<Products />} />               
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/stores" element={<Stores/>}/>
         <Route path="/stores/:id" element={<Store/>}/>
-        <Route path="stores/StoreManagement" element={<OwnerStoreManagement/>}/>
+        <Route path="stores/StoreManagement" element={<StoreManagement/>}/>
         <Route path="stores/:id/addnewproduct" element={<AddNewProduct/>} />
         <Route path="/:id/allproducts" element={<AllProducts/>}/>
       </Routes>
+      <Footer/>
     </div>
   );
 }
