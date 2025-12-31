@@ -104,9 +104,31 @@ const getCart = async (req, res) => {
     });
   }
 };
+const getCartWhereIsDeletedTrue = async (req, res) => {
+  const userId = req.token.user_id;
+  try {
+    const result = await pool.query(
+      `
+      SELECT * FROM cart WHERE users_id =$1 AND is_deleted = true
+      `,
+      [userId]
+    );
+
+    res.json({
+      success: true,
+      items: result.rows,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+};
 
 module.exports = {
   addToCart,
   removeFromCart,
   getCart,
+  getCartWhereIsDeletedTrue,
 };
