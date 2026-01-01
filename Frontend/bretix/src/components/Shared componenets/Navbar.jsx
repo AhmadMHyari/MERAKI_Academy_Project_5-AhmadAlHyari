@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role") || null
+  const role = localStorage.getItem("role") || null;
 
   return (
     <nav className="navbar-container">
@@ -16,7 +16,14 @@ const Navbar = () => {
         <button className="nav-btn" onClick={() => navigate("/products")}>
           Products
         </button>
-        <button className="nav-btn" onClick={()=>{navigate("/stores")}}>Stores</button>
+        <button
+          className="nav-btn"
+          onClick={() => {
+            navigate("/stores");
+          }}
+        >
+          Stores
+        </button>
       </div>
 
       <div className="nav-logo" onClick={() => navigate("/")}>
@@ -24,24 +31,37 @@ const Navbar = () => {
       </div>
 
       <div className="nav-group right">
-        
         <button className="nav-btn">Contact Us</button>
         <div className="auth-group">
-          {role === null && <button className="nav-btn" onClick={() => navigate("/Login")}>
-            Login
-          </button>}
-          {role === null && <button
-            className="register-btn"
-            onClick={() => navigate("/register")}
-          >
-            Register
-          </button>}
-          {role !== null && <button onClick={()=>{localStorage.clear(), navigate("/")}}>Logout</button>}
+          <div className="shoppingCart">
+            <button onClick={() => navigate("/cart")}>🛒 </button>
+          </div>
+          {role === null && (
+            <button className="nav-btn" onClick={() => navigate("/Login")}>
+              Login
+            </button>
+          )}
+          {role === null && (
+            <button
+              className="register-btn"
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </button>
+          )}
+          {role !== null && (
+            <button
+              onClick={() => {
+                localStorage.clear(), navigate("/");
+              }}
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </nav>
   );
 };
-
 
 export default Navbar;
