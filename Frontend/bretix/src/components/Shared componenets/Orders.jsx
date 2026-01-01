@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
+import "./Orders.css";
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,63 +35,55 @@ function Orders() {
     );
   }
 
-  return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-            سجل الطلبات
-          </h1>
-          <p className="mt-4 text-lg text-gray-600">
-            شكراً لثقتك بنا، هنا تجد تفاصيل جميع مشترياتك السابقة.
-          </p>
-        </div>
+ return (
+    <div className="orders-page">
+      <div className="orders-wrapper">
+        <header className="orders-header">
+          <h1>My Orders</h1>
+          <p>سجل المشتريات الخاصة بك</p>
+        </header>
 
         {orders.length === 0 ? (
-          <div className="text-center p-10 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <p className="text-gray-400">لا يوجد طلبات حالياً</p>
+          <div className="no-orders">
+            <p>لا يوجد طلبات حالياً في سجلك.</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="orders-grid-container">
+            {/* رأس الجدول للديسك توب */}
+            <div className="grid-header">
+              <span>Product</span>
+              <span>Order ID</span>
+              <span>Status</span>
+              <span>Total</span>
+            </div>
+
             {orders.map((item, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row justify-between items-center"
-              >
-                <div className="flex items-center space-x-4 space-x-reverse">
-                  <div className="h-16 w-16 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-8 w-8"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                      />
-                    </svg>
+              <div key={i} className="order-item-card">
+                {/* العمود الأول: معلومات المنتج */}
+                <div className="product-column">
+                  <div className="product-img-box">
+                    <img src={item.imgsrc || "placeholder.png"} alt={item.title} />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">
-                      {item.items || "منتج غير محدد"}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      رقم الطلب: #ORD-{Math.floor(Math.random() * 10000)}
-                    </p>
+                  <div className="product-info">
+                    <h3>{item.title || "Sustainable Product"}</h3>
+                    <span>Qty: {item.quantity || 1}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 md:mt-0 flex flex-col items-end">
-                  <span className="px-4 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                    تم التسليم
-                  </span>
-                  <p className="text-lg font-bold text-indigo-600 mt-2">
-                    {item.price ? `${item.price} JOD` : "السعر متوفر عند الدفع"}
-                  </p>
+                {/* العمود الثاني: رقم الطلب */}
+                <div className="order-id-column">
+                  <span className="label">Order ID:</span>
+                  <span className="value">#ORD-{item.cart_id || i + 100}</span>
+                </div>
+
+                {/* العمود الثالث: الحالة */}
+                <div className="status-column">
+                  <span className="status-tag">Completed</span>
+                </div>
+
+                {/* العمود الرابع: السعر */}
+                <div className="price-column">
+                  <span className="price-value">{item.price} JOD</span>
                 </div>
               </div>
             ))}
