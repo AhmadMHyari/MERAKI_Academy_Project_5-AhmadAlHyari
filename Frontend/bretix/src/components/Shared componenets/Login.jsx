@@ -37,7 +37,8 @@ function Login() {
             },
           })
           .then((res) => {
-            console.log(res.data.items[0].id);
+            localStorage.setItem("CartId", res.data.items[0].id);
+          
           });
         dispatch(setRole(result.data.role));
         localStorage.setItem("token", result.data.token);
