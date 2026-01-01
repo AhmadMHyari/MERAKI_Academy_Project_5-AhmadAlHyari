@@ -16,13 +16,13 @@ import ProductDetails from "./components/ProductDetails";
 import ImgSlider from "./components/ImgSlider";
 import Stores from "./components/Shared componenets/Stores";
 import Store from "./components/Shared componenets/Store";
+import Cart from "./components/Shared componenets/CART";
 import StoreManagement from "./components/Owners/StoreManagement";
 import AddNewProduct from "./components/Owners/AddNewProduct";
 import AllProducts from "./components/Owners/AllProducts";
 import Footer from "./components/Shared componenets/Footer";
 import ProductView from "./components/Owners/ProductView";
 import Orders from "./components/Shared componenets/Orders";
-
 
 function App() {
   const [showNav, setShowNav] = useState(true);
@@ -36,7 +36,6 @@ function App() {
   }, [location.pathname]);
   return (
     <div>
-
       <Navbar />
       <Routes>
         <Route
@@ -44,24 +43,24 @@ function App() {
           element={
             <>
               {" "}
-              <ImgSlider /> <br /> <Stores /> <br /> <Orders/> <br />   <Home />  
+              <ImgSlider /> <br /> <Stores /> <br /> <Orders /> <br /> <Home />
             </>
           }
         />
         <Route path="/Login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/Products" element={<Products />} />               
+        <Route path="/Products" element={<Products />} />
         <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/stores" element={<Stores/>}/>
-        <Route path="/stores/:id" element={<Store/>}/>
-        <Route path="stores/StoreManagement" element={<StoreManagement/>}/>
-        <Route path="/stores/:id/addnewproduct" element={<AddNewProduct/>} />
-        <Route path="/:id/allproducts" element={<AllProducts/>}/>
-        <Route path="/allproducts/:productId" element={<ProductView/>}/>
-                <Route path="/Orders" element={<Orders/>}/>
-
+        <Route path="/stores" element={<Stores />} />
+        <Route path="/stores/:id" element={<Store />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="stores/StoreManagement" element={<StoreManagement />} />
+        <Route path="/stores/:id/addnewproduct" element={<AddNewProduct />} />
+        <Route path="/:id/allproducts" element={<AllProducts />} />
+        <Route path="/allproducts/:productId" element={<ProductView />} />
+        <Route path="/Orders" element={<Orders />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
