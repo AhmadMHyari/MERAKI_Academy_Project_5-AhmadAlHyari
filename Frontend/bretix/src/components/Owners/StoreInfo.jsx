@@ -79,6 +79,46 @@ const StoreInfo = () => {
     Description <input type="text" value={storeInfoEdition.description} onChange={(e)=>{setStoreInfoEdition({...storeInfoEdition,description:e.target.value})}} />
     {JSON.stringify(storeInfo) !== JSON.stringify(storeInfoEdition) && <button onClick={confirm}>Confirm Edition</button>} <button onClick={()=>{navigate(-1)}}>Cancel</button>
 
-  </div>)
+        <div className="store-form">
+          <div className="form-grid">
+            <div className="input-field">
+              <label>Store Title</label>
+              <input 
+                type="text" 
+                value={storeInfoEdition.title || ""} 
+                onChange={(e) => setStoreInfoEdition({...storeInfoEdition, title: e.target.value})} 
+              />
+            </div>
+
+            <div className="input-field">
+              <label>Logo URL</label>
+              <input 
+                type="text" 
+                value={storeInfoEdition.logo || ""} 
+                onChange={(e) => setStoreInfoEdition({...storeInfoEdition, logo: e.target.value})} 
+              />
+            </div>
+
+            <div className="input-field full-row">
+              <label>Description</label>
+              <textarea 
+                rows="4"
+                value={storeInfoEdition.description || ""} 
+                onChange={(e) => setStoreInfoEdition({...storeInfoEdition, description: e.target.value})} 
+              />
+            </div>
+          </div>
+
+          <div className="form-actions">
+            {JSON.stringify(storeInfo) !== JSON.stringify(storeInfoEdition) && (
+              <button className="confirm-btn" onClick={handleUpdate}>Confirm Edition</button>
+            )}
+            <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 export default StoreInfo;

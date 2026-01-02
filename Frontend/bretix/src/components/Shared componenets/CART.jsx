@@ -3,10 +3,8 @@ import axios from "axios";
 
 const Cart = () => {
   const [items, setItems] = useState([]);
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
     axios
       .get("http://localhost:5000/cart/with-products", {
         headers: {
@@ -20,7 +18,20 @@ const Cart = () => {
         console.log(err);
       });
   }, []);
+  const removeFromCart = (cartProductId) => {
+    axios
+      .delete(`http://localhost:5000/cart/${cartProductId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log(res.data.message);
 
+        setItems(items.filter((item) => item.cart_product_id !== cartProductId));
+      })
+      .catch((err) => {
+        console.error(err.response?.data || err.message);
+      });
+  };
   return (
     <div>
       <h2>Your Cart</h2>
@@ -33,8 +44,8 @@ const Cart = () => {
             <img src={item.imgsrc} alt={item.title} />
             <p>{item.title}</p>
             <p>Price: {item.price}</p>
-            <p>Quantity  : {item.quantity}</p>
-            <hr />
+            <p>Quantity : {item.quantity}</p>
+            <button onClick={() => removeFromCart(item.cartProductId)}>Remove</button>
           </div>
         ))
       )}
