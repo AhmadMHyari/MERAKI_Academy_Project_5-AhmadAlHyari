@@ -181,7 +181,7 @@ const updatedQuantity = (req, res) => {
       }
 
       res.json({
-        success: true,
+        success:  true,
         message: "Quantity updated",
         item: result.rows[0],
       });
