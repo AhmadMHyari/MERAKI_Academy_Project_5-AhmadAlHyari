@@ -34,6 +34,29 @@ const Cart = () => {
         console.error(err.response?.data || err.message);
       });
   };
+  const updateQuantity = (cartProductId, newQuantity) => {
+    const token = localStorage.getItem("token");
+
+    if (newQuantity < 1) return;
+
+    axios
+      .patch(
+        `http://localhost:5000/cart/${cartProductId}`,
+        { quantity: newQuantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(() => {
+        setItems(
+          items.map((item) =>
+            item.cart_product_id === cartProductId
+              ? { ...item, quantity: newQuantity }
+              : item
+          )
+        );
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div>
       <h2>Your Cart</h2>
@@ -49,6 +72,23 @@ const Cart = () => {
             <p>Quantity : {item.quantity}</p>
             <button onClick={() => removeFromCart(item.cart_product_id)}>
               Remove
+            </button>
+            <button
+              onClick={() =>
+                updateQuantity(item.cart_product_id, item.quantity - 1)
+              }
+            >
+              -
+            </button>
+
+            <span>{item.quantity}</span>
+
+            <button
+              onClick={() =>
+                updateQuantity(item.cart_product_id, item.quantity + 1)
+              }
+            >
+              +
             </button>
           </div>
         ))
