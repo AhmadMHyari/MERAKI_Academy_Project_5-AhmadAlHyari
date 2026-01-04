@@ -18,7 +18,46 @@ const Home = () => {
       });
   }, []);
 
-  const addToCart = (productId) => {
+  const handleFlyAnimation = (e, imgsrc) => {
+    const cart = document.getElementById("cart-icon-nav");
+    if (!cart) return;
+
+    const flyingImg = document.createElement("img");
+    flyingImg.src = imgsrc;
+    flyingImg.className = "flying-product-premium";
+
+    const rect = e.target.getBoundingClientRect();
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    flyingImg.style.left = `${rect.left + scrollLeft}px`;
+    flyingImg.style.top = `${rect.top + scrollTop}px`;
+
+    document.body.appendChild(flyingImg);
+
+    const cartRect = cart.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      flyingImg.style.setProperty(
+        "--target-x",
+        `${cartRect.left + scrollLeft - rect.left}px`
+      );
+      flyingImg.style.setProperty(
+        "--target-y",
+        `${cartRect.top + scrollTop - rect.top}px`
+      );
+      flyingImg.classList.add("is-flying");
+    });
+
+    setTimeout(() => {
+      flyingImg.remove();
+      cart.classList.add("cart-bounce-premium");
+      setTimeout(() => cart.classList.remove("cart-bounce-premium"), 400);
+    }, 900);
+  };
+
+  const addToCart = (e, product) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -26,11 +65,13 @@ const Home = () => {
       return;
     }
 
+    handleFlyAnimation(e, product.imgsrc);
+
     axios
       .post(
         "http://localhost:5000/cart",
         {
-          products_id: productId,
+          products_id: product.id,
           cart_id: localStorage.getItem("CartId"),
           quantity: 1,
         },
@@ -41,13 +82,16 @@ const Home = () => {
         }
       )
       .then((res) => {
-        alert("Product added to cart ✅");
+        const currentCount = parseInt(localStorage.getItem("cartCount") || "0");
+        localStorage.setItem("cartCount", currentCount + 1);
+        window.dispatchEvent(new Event("cartUpdated"));
       })
       .catch((err) => {
         console.error(err.response?.data || err.message);
         alert("Error adding product");
       });
   };
+
   return (
     <div className="container-main">
       <div className="header-section">
@@ -70,16 +114,14 @@ const Home = () => {
                     className="product-img"
                   />
                 </div>
-
                 <h3 className="product-name">{product.title}</h3>
               </Link>
 
               <div className="product-footer">
                 <span className="price">${product.price}</span>
-
                 <button
                   className="add-to-cartProduct-btn"
-                  onClick={() => addToCart(product.id)}
+                  onClick={(e) => addToCart(e, product)}
                 >
                   <span className="plus-icon">+</span> Cart
                 </button>
@@ -93,8 +135,3 @@ const Home = () => {
 };
 
 export default Home;
-
-<button
-  className="add-to-cart-btn"
-  onClick={() => addToCart(item.id)}
-></button>;

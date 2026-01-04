@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useState,useEffect}from "react";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { FaUser, FaUserPlus, FaSignOutAlt } from "react-icons/fa";
@@ -12,10 +12,22 @@ import {
   ShoppingCart,
   ClipboardList,
 } from "lucide-react";
+
 const Navbar = () => {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
+  const [cartCount, setCartCount] = useState(
+    parseInt(localStorage.getItem("cartCount") || "0")
+  );
 
+  
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCartCount(parseInt(localStorage.getItem("cartCount") || "0"));
+    };
+    window.addEventListener("cartUpdated", handleStorageChange);
+    return () => window.removeEventListener("cartUpdated", handleStorageChange);
+  }, []);
   return (
     <nav className="navbar-container">
       <div className="nav-group left">
@@ -37,6 +49,14 @@ const Navbar = () => {
       <div className="nav-group center">
         <button
           className="icon-btn"
+          onClick={() => navigate("/stores")}
+          title="Stores"
+        >
+          <Store size={35} />
+        </button>
+
+        <button
+          className="icon-btn"
           onClick={() => navigate("/products")}
           title="Products"
         >
@@ -53,39 +73,24 @@ const Navbar = () => {
 
         <button
           className="icon-btn"
-          onClick={() => navigate("/stores")}
-          title="Stores"
-        >
-          <Store size={35} />
-        </button>
-
-        <button
-          className="icon-btn"
           onClick={() => navigate("/ContactUs")}
           title="Contact Us"
         >
           <MessageSquare size={35} />
         </button>
-
-        {role === "1" && (
-          <button
-            className="icon-btn admin-link"
-            onClick={() => navigate("/AdminDashboard")}
-            title="Admin Dashboard"
-            style={{ color: "#10b981" }}
-          >
-            <ShieldCheck size={35} />
-          </button>
-        )}
       </div>
 
       <div className="nav-group right">
         <button
-          className="icon-btn"
+          id="cart-icon-nav"
+          className="icon-btn cart-wrapper-nav" 
           onClick={() => navigate("/cart")}
           title="Cart"
         >
-          <ShoppingCart size={35} />
+          <ShoppingCart size={28} />
+          {cartCount > 0 && (
+            <span className="cart-badge-premium">{cartCount}</span>
+          )}
         </button>
 
         {role === "2" && (
@@ -94,6 +99,16 @@ const Navbar = () => {
             onClick={() => navigate("/stores/StoreManagement")}
           >
             Store Management
+          </button>
+        )}
+        {role === "1" && (
+          <button
+            className="icon-btn admin-link"
+            onClick={() => navigate("/AdminDashboard")}
+            title="Admin Dashboard"
+            style={{ color: "#10b981" }}
+          >
+            <ShieldCheck size={35} />
           </button>
         )}
 

@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import "./AdminDashboard.css";
 import "./AddnewProducts.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  
 
   const [usersEdit, setUsersEdit] = useState({});
   const [showEditForm, setShowEditForm] = useState(false);
@@ -43,9 +42,7 @@ const AdminDashboard = () => {
     { id: "settings", name: "Settings", icon: <Settings size={20} /> },
   ];
 
- 
- const updateUserInfo = () => {
-   
+  const updateUserInfo = () => {
     if (!usersEdit.id) {
       console.error("User ID is missing!");
       return;
@@ -54,24 +51,17 @@ const AdminDashboard = () => {
     axios
       .put(`http://localhost:5000/users/update/${usersEdit.id}`, usersEdit)
       .then((result) => {
-        console.log("Update Result:", result.data);
-
-       
-        const updatedUsers = users.map((u) => 
+        const updatedUsers = users.map((u) =>
           u.id === usersEdit.id ? { ...u, ...usersEdit } : u
         );
         setUsers(updatedUsers);
-
-        
         setShowEditForm(false);
         setShowToast(true);
-
-  
         setTimeout(() => setShowToast(false), 3000);
       })
       .catch((err) => {
         console.error("Error updating user:", err);
-        alert("حدث خطأ أثناء التحديث، تأكد من اتصال السيرفر");
+        alert("حدث خطأ أثناء التحديث");
       });
   };
 
@@ -85,18 +75,16 @@ const AdminDashboard = () => {
       categories_id,
       store_id,
     };
-
     axios
       .post(`http://localhost:5000/products/`, adminAddProduct)
       .then((result) => {
         if (result.data.result) {
           setProducts([...products, result.data.result]);
         }
-
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
-
         setShowAddForm(false);
+
         setImgSrc("");
         setTitle("");
         setDescription("");
@@ -105,9 +93,7 @@ const AdminDashboard = () => {
         setCategories_id("");
         setStore_id("");
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -121,11 +107,87 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {showEditForm && (
+        <div className="modal-overlay animate-fade-in">
+          <div className="modal-content animate-slide-up">
+            <div className="modal-header">
+              <div className="modal-title-box">
+                <Settings className="text-emerald-500" size={24} />
+                <h3>Edit Member Details</h3>
+              </div>
+              <button
+                className="close-modal-btn"
+                onClick={() => setShowEditForm(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p className="modal-subtitle">
+                Update information for{" "}
+                <strong>
+                  {usersEdit.firstname} {usersEdit.lastname}
+                </strong>
+              </p>
+              <div className="inputs-grid-modal">
+                <div className="input-field-premium">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    value={usersEdit.firstname || ""}
+                    onChange={(e) =>
+                      setUsersEdit({ ...usersEdit, firstname: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="input-field-premium">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    value={usersEdit.lastname || ""}
+                    onChange={(e) =>
+                      setUsersEdit({ ...usersEdit, lastname: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="input-field-premium full-width">
+                  <label>Country / Location</label>
+                  <input
+                    type="text"
+                    value={usersEdit.country || ""}
+                    onChange={(e) =>
+                      setUsersEdit({ ...usersEdit, country: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="cancel-btn"
+                onClick={() => setShowEditForm(false)}
+              >
+                Cancel
+              </button>
+              <button className="save-btn" onClick={updateUserInfo}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <div className="logo-icon"><Leaf size={24} /></div>
+          <div className="logo-icon">
+            <Leaf size={24} />
+          </div>
           <div className="logo-text">
-            <h1>BRETIX <span>ECO</span></h1>
+            <h1>
+              BRETIX <span>ECO</span>
+            </h1>
             <p>Sustainability Suite</p>
           </div>
         </div>
@@ -145,7 +207,8 @@ const AdminDashboard = () => {
 
         <div className="sidebar-footer">
           <button className="logout-btn" onClick={() => navigate("/")}>
-            <LogOut size={18} /><span>Logout</span>
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
@@ -153,7 +216,7 @@ const AdminDashboard = () => {
       <div className="main-wrapper">
         <header className="main-header">
           <div className="header-title">
-            <h2>{activeTab}</h2>
+            <h2>{activeTab.toUpperCase()}</h2>
             <p>Welcome back, here's what's happening today.</p>
           </div>
           <div className="header-profile">
@@ -161,7 +224,9 @@ const AdminDashboard = () => {
               <p className="admin-name">Administrator</p>
               <p className="admin-status">Verified Account</p>
             </div>
-            <div className="profile-avatar">AD<div className="online-indicator"></div></div>
+            <div className="profile-avatar">
+              AD<div className="online-indicator"></div>
+            </div>
           </div>
         </header>
 
@@ -186,34 +251,67 @@ const AdminDashboard = () => {
                   <div className="inputs-grid">
                     <div className="input-field">
                       <label>Image URL</label>
-                      <input type="text" value={imgsrc} placeholder="https://..." onChange={(e) => setImgSrc(e.target.value)} />
+                      <input
+                        type="text"
+                        value={imgsrc}
+                        onChange={(e) => setImgSrc(e.target.value)}
+                      />
                     </div>
                     <div className="input-field">
                       <label>Title</label>
-                      <input type="text" value={title} placeholder="Product Name" onChange={(e) => setTitle(e.target.value)} />
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
                     </div>
                     <div className="input-field">
                       <label>Price</label>
-                      <input type="text" value={price} placeholder="0.00" onChange={(e) => setPrice(e.target.value)} />
+                      <input
+                        type="text"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                      />
                     </div>
                     <div className="input-field">
                       <label>Description</label>
-                      <input type="text" value={description} placeholder="Short description" onChange={(e) => setDescription(e.target.value)} />
+                      <input
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                      />
                     </div>
                     <div className="input-field">
                       <label>Rate</label>
-                      <input type="number" value={rate} placeholder="1-5" onChange={(e) => setRate(e.target.value)} />
+                      <input
+                        type="number"
+                        value={rate}
+                        onChange={(e) => setRate(e.target.value)}
+                      />
                     </div>
                     <div className="input-field">
                       <label>Category ID</label>
-                      <input type="text" value={categories_id} placeholder="e.g. 1" onChange={(e) => setCategories_id(e.target.value)} />
+                      <input
+                        type="text"
+                        value={categories_id}
+                        onChange={(e) => setCategories_id(e.target.value)}
+                      />
                     </div>
                     <div className="input-field full-row">
                       <label>Store ID</label>
-                      <input type="text" value={store_id} placeholder="e.g. 10" onChange={(e) => setStore_id(e.target.value)} />
+                      <input
+                        type="text"
+                        value={store_id}
+                        onChange={(e) => setStore_id(e.target.value)}
+                      />
                     </div>
                   </div>
-                  <button className="submit-product-btn" onClick={productsAdmin}>Save Product to Bretix Eco</button>
+                  <button
+                    className="submit-product-btn"
+                    onClick={productsAdmin}
+                  >
+                    Save Product to Bretix Eco
+                  </button>
                 </div>
               )}
 
@@ -225,13 +323,14 @@ const AdminDashboard = () => {
                       <div className="product-overlay">
                         <button className="view-details">Quick View</button>
                       </div>
-                      {product.isEco && <span className="eco-badge"><Leaf size={12} /> Eco</span>}
                     </div>
                     <div className="product-info">
-                      <h4 className="product-title">{product.title || "Sustainable Item"}</h4>
+                      <h4 className="product-title">
+                        {product.title || "Item"}
+                      </h4>
                       <div className="product-meta">
-                        <span className="product-price">${product.price || "0.00"}</span>
-                        <span className="product-stock">{product.stock || 0} in stock</span>
+                        <span className="product-price">${product.price}</span>
+                        <span className="product-stock">In Stock</span>
                       </div>
                     </div>
                   </div>
@@ -241,118 +340,104 @@ const AdminDashboard = () => {
           )}
 
           {activeTab === "users" && (
-  <div className="users-section animate-fade-in">
-    <div className="section-header">
-      <h3>Eco-System Members</h3>
-      <span className="user-count">{users.length} Active Users</span>
-    </div>
-
-  
-    {showEditForm && (
-      <div className="add-product-form-container" style={{ marginBottom: '30px', border: '2px solid #10b981', padding: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h4>تعديل بيانات: {usersEdit.firstname}</h4>
-          <button onClick={() => setShowEditForm(false)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}>إغلاق X</button>
-        </div>
-        <div className="inputs-grid">
-          <div className="input-field">
-            <label>الاسم الأول</label>
-            <input 
-              type="text" 
-              value={usersEdit.firstname || ""} 
-              onChange={(e) => setUsersEdit({ ...usersEdit, firstname: e.target.value })} 
-            />
-          </div>
-          <div className="input-field">
-            <label>الاسم الأخير</label>
-            <input 
-              type="text" 
-              value={usersEdit.lastname || ""} 
-              onChange={(e) => setUsersEdit({ ...usersEdit, lastname: e.target.value })} 
-            />
-          </div>
-          <div className="input-field">
-            <label>الدولة</label>
-            <input 
-              type="text" 
-              value={usersEdit.country || ""} 
-              onChange={(e) => setUsersEdit({ ...usersEdit, country: e.target.value })} 
-            />
-          </div>
-        </div>
-        <button className="submit-product-btn" style={{ marginTop: '15px' }} onClick={updateUserInfo}>
-          حفظ التعديلات
-        </button>
-      </div>
-    )}
-
-    <div className="table-wrapper">
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user, i) => (
-            <tr key={user.id || i} className="table-row">
-              <td>
-                <div className="user-cell">
-                  <div className="user-avatar-small">
-                    {user.firstname?.charAt(0)}{user.lastname?.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="user-full-name">{user.firstname} {user.lastname}</p>
-                    <p className="user-email">ID: #{user.id}</p>
-                  </div>
+            <div className="users-section animate-fade-in">
+              <div className="section-header-modern">
+                <div>
+                  <h3>Eco-System Members</h3>
+                  <p>{users.length} verified sustainable users</p>
                 </div>
-              </td>
-              <td>
-                <div className="location-tag">
-                  <Leaf size={14} className="text-green-500" />
-                  {user.country}
-                </div>
-              </td>
-              <td><span className="status-badge">Active</span></td>
-              <td>
-                
-                <button 
-                  className="edit-btn" 
-                  onClick={() => {
-                    setUsersEdit(user); 
-                    setShowEditForm(true); 
-                    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-                  }}
-                >
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
+              </div>
+
+              <div className="modern-table-container">
+                <table className="modern-table">
+                  <thead>
+                    <tr>
+                      <th>Member Info</th>
+                      <th>Location</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: "right" }}>Management</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user, i) => (
+                      <tr key={user.id || i}>
+                        <td>
+                          <div className="user-profile-cell">
+                            <div className="avatar-circle">
+                              {user.firstname?.charAt(0)}
+                              {user.lastname?.charAt(0)}
+                            </div>
+                            <div className="user-text">
+                              <span className="name">
+                                {user.firstname} {user.lastname}
+                              </span>
+                              <span className="id">ID: #{user.id}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="location-chip">
+                            <Leaf size={12} /> {user.country || "Global"}
+                          </div>
+                        </td>
+                        <td>
+                          <span className="status-pill active">Verified</span>
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <button
+                            className="action-edit-btn"
+                            onClick={() => {
+                              setUsersEdit(user);
+                              setShowEditForm(true);
+                            }}
+                          >
+                            Edit Profile
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {activeTab === "overview" && (
             <>
               <div className="stats-grid">
-                <StatCard title="Total Sales" value="$12,450" change="+12.5%" icon={<TrendingUp size={20} />} type="emerald" />
-                <StatCard title="Eco Projects" value="24" change="+2" icon={<Leaf size={20} />} type="green" />
-                <StatCard title="Security Score" value="98%" change="Safe" icon={<ShieldCheck size={20} />} type="blue" />
+                <StatCard
+                  title="Total Sales"
+                  value="$12,450"
+                  change="+12.5%"
+                  icon={<TrendingUp size={20} />}
+                  type="emerald"
+                />
+                <StatCard
+                  title="Eco Projects"
+                  value="24"
+                  change="+2"
+                  icon={<Leaf size={20} />}
+                  type="green"
+                />
+                <StatCard
+                  title="Security Score"
+                  value="98%"
+                  change="Safe"
+                  icon={<ShieldCheck size={20} />}
+                  type="blue"
+                />
               </div>
               <section className="activity-card">
                 <div className="card-header">
                   <h3>Recent Ecosystem Activity</h3>
-                  <button className="report-link">View Full Report</button>
                 </div>
                 <div className="card-body">
-                  <div className="loading-animation"><Package size={40} /></div>
-                  <p>Synchronizing with <strong>Bretix API</strong> nodes...<br />Fetching the latest eco-data.</p>
+                  <div className="loading-animation">
+                    <Package size={40} />
+                  </div>
+                  <p>
+                    Synchronizing with <strong>Bretix API</strong> nodes...
+                  </p>
                 </div>
               </section>
             </>
@@ -362,8 +447,13 @@ const AdminDashboard = () => {
 
       {showToast && (
         <div className="eco-toast-box">
-          <div className="toast-icon"><CheckCircle size={24} color="#10b981" /></div>
-          <div className="toast-message"><h4>Success!</h4><p>Action completed successfully.</p></div>
+          <div className="toast-icon">
+            <CheckCircle size={24} color="#10b981" />
+          </div>
+          <div className="toast-message">
+            <h4>Success!</h4>
+            <p>Action completed successfully.</p>
+          </div>
         </div>
       )}
     </div>
