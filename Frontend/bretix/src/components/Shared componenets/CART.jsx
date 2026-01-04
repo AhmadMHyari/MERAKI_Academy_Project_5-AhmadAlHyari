@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import {
+  Trash2,
+  ShoppingBag,
+  CreditCard,
+  Truck,
+  Minus,
+  Plus,
+} from "lucide-react";
+import "./Cart.css";
+
 const Cart = () => {
   const [items, setItems] = useState([]);
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     axios
       .get("http://localhost:5000/cart/with-products", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
         setItems(res.data.items);
@@ -21,7 +30,6 @@ const Cart = () => {
 
   const updateQuantity = (cartProductId, newQuantity) => {
     const token = localStorage.getItem("token");
-
     axios
       .patch(
         `http://localhost:5000/cart/${cartProductId}`,
@@ -42,71 +50,107 @@ const Cart = () => {
         }
       });
   };
-  const total = items.reduce((sum, item) => {
-    return sum + item.price * item.quantity;
-  }, 0);
 
-  const totalQuantity = items.reduce((sum, item) => {
-    return sum + item.quantity;
-  }, 0);
+  const total = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div>
-      <div>
-        Total quantity of products: {totalQuantity} <br />
-        Cart Totals : {total} <br />
-        <div>
-          <input
-            type="radio"
-            id="cash_on_delivery"
-            name="payment_method"
-            value="COD"
-          />
-          <label for="cash_on_delivery">Cash on Delivery</label>
-        </div>
-        <div>
-          <input
-            type="radio"
-            id="pay_by_card"
-            name="payment_method"
-            value="Card"
-          />
-          <label for="pay_by_card">Pay by card</label>
-        </div>
-        <button>Insert Location for Delivery</button>
-      </div>
-      <h2>Your Cart</h2>
-
-      {items.length === 0 ? (
-        <p>Cart is empty</p>
-      ) : (
-        items.map((item) => (
-          <div key={item.cart_product_id}>
-            <img src={item.imgsrc} alt={item.title} />
-            <p>{item.title}</p>
-            <p>Price: {item.price}</p>
-            <p>Total: {item.price * item.quantity}</p>
-            <p>Quantity : {item.quantity}</p>
-            <button
-              onClick={() =>
-                updateQuantity(item.cart_product_id, item.quantity - 1)
-              }
-            >
-              -
-            </button>
-
-            <span>{item.quantity}</span>
-
-            <button
-              onClick={() =>
-                updateQuantity(item.cart_product_id, item.quantity + 1)
-              }
-            >
-              +
-            </button>
+    <div className="cart-premium-wrapper">
+      <div className="cart-main-container">
+        <div className="cart-items-section">
+          <div className="cart-header-title">
+            <ShoppingBag size={28} />
+            <h2>
+              Shopping Cart <span>({items.length} items)</span>
+            </h2>
           </div>
-        ))
-      )}
+
+          {items.length === 0 ? (
+            <div className="empty-msg">سلتك خضراء بانتظار منتجاتك..</div>
+          ) : (
+            items.map((item) => (
+              <div className="cart-item-card" key={item.cart_product_id}>
+                <div className="item-img">
+                  <img src={item.imgsrc} alt={item.title} />
+                </div>
+                <div className="item-info">
+                  <h4>{item.title}</h4>
+                  <p className="unit-price">${item.price}</p>
+                </div>
+                <div className="quantity-box">
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.cart_product_id, item.quantity - 1)
+                    }
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button
+                    onClick={() =>
+                      updateQuantity(item.cart_product_id, item.quantity + 1)
+                    }
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+                <div className="item-subtotal">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </div>
+                <button
+                  className="delete-btn"
+                  onClick={() => updateQuantity(item.cart_product_id, 0)}
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="cart-summary-section">
+          <div className="summary-card">
+            <h3>Order Summary</h3>
+            <div className="summary-line">
+              <span>Total Quantity</span>
+              <span>{totalQuantity}</span>
+            </div>
+            <div className="summary-line total-big">
+              <span>Total Price</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+
+            <div className="payment-options">
+              <p>Payment Method</p>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="payment_method"
+                  value="COD"
+                  defaultChecked
+                />
+                <div className="radio-design">
+                  <Truck size={16} /> Cash on Delivery
+                </div>
+              </label>
+              <label className="radio-label">
+                <input type="radio" name="payment_method" value="Card" />
+                <div className="radio-design">
+                  <CreditCard size={16} /> Pay by card
+                </div>
+              </label>
+            </div>
+
+            <button className="location-btn">
+              Insert Location for Delivery
+            </button>
+            <button className="checkout-btn-final">Confirm Order</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
