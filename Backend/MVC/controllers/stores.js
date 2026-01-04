@@ -237,6 +237,104 @@ const getRevenueChart = async (req, res) => {
   }
 };
 
+const getOrders = async (req, res) => {
+  const { id } = req.params;
+  const { page = 1, from_date, to_date } = req.query;
+  
+  try {
+    let dateCondition = '';
+    if (from_date && to_date) {
+      dateCondition = `AND cart.done_at BETWEEN '${from_date}' AND '${to_date}'`;
+    }
+    
+    const offset = (page - 1) * 5;
+    const orders = await pool.query(`
+      SELECT 
+        cart.id as order_id,
+        cart.done_at,
+        users.firstname,
+        users.lastname,
+        SUM(cart_products.quantity * products.price) as total
+      FROM cart
+      JOIN cart_products ON cart.id = cart_products.cart
+      JOIN products ON cart_products.product = products.id
+      JOIN users ON cart.users_id = users.id
+      WHERE products.store_id = ${id}
+        AND cart.done_at IS NOT NULL
+        ${dateCondition}
+      GROUP BY cart.id, cart.done_at, users.firstname, users.lastname
+      ORDER BY cart.done_at DESC
+      LIMIT 5 OFFSET ${offset}
+    `);
+    
+    const totalCount = await pool.query(`
+      SELECT COUNT(DISTINCT cart.id) as count
+      FROM cart
+      JOIN cart_products ON cart.id = cart_products.cart
+      JOIN products ON cart_products.product = products.id
+      WHERE products.store_id = ${id}
+        AND cart.done_at IS NOT NULL
+        ${dateCondition}
+    `);
+    
+    const total = parseInt(totalCount.rows[0].count);
+    const totalPages = Math.ceil(total / 5);
+    
+    res.json({
+      success: true,
+      orders: orders.rows,
+      total: total,
+      page: parseInt(page),
+      total_pages: totalPages
+    });
+    
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false });
+  }
+};
+
+const getOrderDetails = async (req, res) => {
+  const { order_id } = req.params;
+  
+  try {
+    const order = await pool.query(`
+      SELECT 
+        cart.id,
+        cart.users_id,
+        cart.done_at
+      FROM cart
+      WHERE cart.id = $1
+    `, [order_id]);
+    
+    const items = await pool.query(`
+      SELECT 
+        products.id,
+        products.title,
+        products.imgsrc,
+        products.price,
+        cart_products.quantity,
+        (cart_products.quantity * products.price) as subtotal
+      FROM cart_products
+      JOIN products ON cart_products.product = products.id
+      WHERE cart_products.cart = $1
+    `, [order_id]);
+    
+    const total = items.rows.reduce((sum, item) => sum + item.subtotal, 0);
+    
+    res.json({
+      success: true,
+      order: order.rows[0],
+      items: items.rows,
+      total: total
+    });
+    
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false });
+  }
+};
+
 module.exports = {
   addNewStore,
   getStoreById,
@@ -247,5 +345,7 @@ module.exports = {
   addNewProductInStore,
   getAllDoneOrdersForStoreById,
   getStoreStatistic,
-  getRevenueChart
+  getRevenueChart,
+  getOrders,
+  getOrderDetails,
 };
