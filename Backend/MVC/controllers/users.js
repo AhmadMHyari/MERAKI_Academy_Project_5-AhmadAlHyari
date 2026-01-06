@@ -170,7 +170,16 @@ const updateUserInformation = (req, res) => {
   pool
     .query(
       `UPDATE users SET firstName=$1,lastName=$2,age=$3,country=$4,phoneNumber=$5,date_of_birthday=$6,email=$7 WHERE id=$8 RETURNING *`,
-      [firstName, lastName, age, country, phoneNumber, date_of_birthday, email,id]
+      [
+        firstName,
+        lastName,
+        age,
+        country,
+        phoneNumber,
+        date_of_birthday,
+        email,
+        id,
+      ]
     )
     .then((result) => {
       res.status(201).json({
@@ -186,4 +195,4 @@ const updateUserInformation = (req, res) => {
       });
     });
 };
-module.exports = { register, login, getAllUser,updateUserInformation };
+module.exports = { register, login, getAllUser, updateUserInformation };
