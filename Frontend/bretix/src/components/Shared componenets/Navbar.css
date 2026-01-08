@@ -1,185 +1,130 @@
-/* =========================
-   NAVBAR CONTAINER
-========================= */
+:root {
+    --nav-bg: #ffffff;
+    --eco-primary: #064e3b;
+    --eco-accent: #10b981;
+    --text-main: #1e293b;
+    --nav-height: 80px; /* طول الناف بار */
+}
+
 .navbar-container {
     position: sticky;
     top: 0;
-    z-index: 1000;
-
-    width: 121%;
-    height: 80px;
-
+    left: 0;
+    width: 100%; /* تجعلها تغطي الشاشة بالكامل */
+    height: var(--nav-height);
+    background-color: var(--nav-bg);
     display: flex;
-    align-items: center;
     justify-content: space-between;
-
-    padding: 0 50px;
-    box-sizing: border-box;
-
-    background-color: #ffffff;
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    align-items: center;
+    padding: 0 40px; /* مساحة داخلية من اليمين واليسار */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    box-sizing: border-box; /* لضمان عدم خروج البادينج عن العرض */
+    border-bottom: 1px solid #f1f5f9;
 }
 
-/* =========================
-   NAV GROUPS
-========================= */
+/* المجموعات الثلاث داخل الناف بار */
 .nav-group {
     display: flex;
     align-items: center;
-    gap: 150px;
+    gap: 25px;
+    flex: 1; /* تعطي توزيع متساوي */
 }
 
-/* =========================
-   LOGO
-========================= */
+.nav-group.center {
+    justify-content: center;
+    flex: 2; /* تعطي مساحة أكبر للأزرار الوسطى */
+}
+
+.nav-group.right {
+    justify-content: flex-end;
+}
+
+/* الشعار */
 .nav-logo {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #1a5d1a;
-    cursor: pointer;
-    letter-spacing: -1px;
-    margin: -250px ;
-}
-
-/* =========================
-   NAV BUTTONS
-========================= */
-.nav-btn {
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: #444;
-    cursor: pointer;
-    padding: 8px 12px;
-    transition: color 0.3s ease;
-}
-
-.nav-btn:hover {
-    color: #1a5d1a;
-}
-
-/* =========================
-   AUTH / REGISTER
-========================= */
-.auth-group {
     display: flex;
     align-items: center;
-    gap: 5px;
-    margin-left: 10px;
-    padding-left: 15px;
-    border-left: 1px solid #ddd;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--eco-primary);
+    transition: 0.3s;
 }
 
-.register-btn {
-    background-color: #1a5d1a;
-    color: #ffffff;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.3s ease;
+.nav-logo span {
+    letter-spacing: -0.5px;
 }
 
-.register-btn:hover {
-    background-color: #144514;
-}
-
-/* =========================
-   ICON BUTTONS
-========================= */
+/* الأزرار التي تحتوي على أيقونات */
 .icon-btn {
     background: none;
     border: none;
+    color: #64748b;
     cursor: pointer;
-
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-
     padding: 8px;
-    border-radius: 8px;
-
-    color: #374151;
-    transition: all 0.2s ease;
+    border-radius: 12px;
 }
 
 .icon-btn:hover {
-    background-color: #f3f4f6;
-    color: #10b981;
+    color: var(--eco-accent);
+    background-color: #f0fdf4;
+    transform: translateY(-2px);
 }
 
-/* =========================
-   CART BADGE
-========================= */
+/* زر العربة مع الرقم */
 .cart-wrapper-nav {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .cart-badge-premium {
     position: absolute;
     top: -5px;
     right: -5px;
-
-    background: linear-gradient(45deg, #ef4444, #dc2626);
-    color: #ffffff;
-
-    font-size: 11px;
-    font-weight: bold;
-
-    min-width: 18px;
-    height: 18px;
-
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 50px;
+    border: 2px solid white;
 }
 
-.cart-bounce-premium {
-    animation: premium-receive 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* الأزرار النصية (مثل Store Management) */
+.nav-btn {
+    background: var(--eco-primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-/* =========================
-   ANIMATIONS
-========================= */
-@keyframes pop-in {
-    0% {
-        transform: scale(0);
-    }
-    100% {
-        transform: scale(1);
-    }
+.nav-btn:hover {
+    background: var(--eco-accent);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
-@keyframes premium-receive {
-    0% {
-        transform: scale(1);
-    }
-    30% {
-        transform: scale(1.5);
-    }
-    100% {
-        transform: scale(1);
-    }
+/* زر الخروج */
+.logout:hover {
+    color: #ef4444 !important;
+    background-color: #fef2f2 !important;
 }
 
-/* =========================
-   GLOBAL FIX
-========================= */
-/*.navbar-container * {
-    margin: 20px;
-    box-sizing: border-box;
-}*/
+/* استجابة الشاشات الصغيرة */
+@media (max-width: 768px) {
+    .navbar-container {
+        padding: 0 15px;
+    }
+    .nav-group.center {
+        display: none; /* إخفاء الأزرار الوسطى في الموبايل أو تحويلها لقائمة */
+    }
+    .nav-logo span {
+        display: none;
+    }
+}
