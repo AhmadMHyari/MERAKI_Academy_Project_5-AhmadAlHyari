@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { 
-  LayoutDashboard, Package, Settings, LogOut, 
-  Store, Leaf, Plus, Star, ArrowLeft 
+  Package, Leaf, Plus, Star, ArrowLeft 
 } from "lucide-react";
-import "./StoreManagement.css"; // نستخدم الملف الموحد
+import "./StoreManagement.css";
 
 const AllProducts = () => {
   const navigate = useNavigate();
@@ -37,7 +36,6 @@ const AllProducts = () => {
 
   return (
     <div className="owner-dashboard-container">
-      {/* Sidebar الموحد */}
       <aside className="owner-sidebar">
         <div className="owner-logo-section">
           <div className="owner-logo-icon"><Leaf size={24} /></div>
@@ -46,20 +44,16 @@ const AllProducts = () => {
             <p>Merchant Portal</p>
           </div>
         </div>
+        
         <nav className="owner-nav">
-          <div className="owner-nav-item" onClick={() => navigate("/managerdashboard")}>
-            <LayoutDashboard size={20} /> <span>Overview</span>
-          </div>
           <div className="owner-nav-item active">
-            <Package size={20} /> <span>Inventory</span>
-          </div>
-          <div className="owner-nav-item" onClick={() => navigate(`/ownerstoremanagement`)}>
-            <Store size={20} /> <span>My Stores</span>
+            <Package size={20} /> <span>Product Inventory</span>
           </div>
         </nav>
+        
         <div className="owner-sidebar-footer">
           <button className="owner-back-btn" onClick={() => navigate("/ownerstoremanagement")}>
-            <ArrowLeft size={18} /> <span>Go Back</span>
+            <ArrowLeft size={18} /> <span>Back to Dashboard</span>
           </button>
         </div>
       </aside>
@@ -67,7 +61,7 @@ const AllProducts = () => {
       <div className="owner-main-content">
         <header className="owner-header">
           <div className="owner-header-info">
-            <h2>{storeInfo.name || "Store Inventory"}</h2>
+            <h2>{storeInfo.title || "Store Inventory"}</h2>
             <p>Manage and monitor your sustainable products.</p>
           </div>
           <button 
@@ -78,14 +72,13 @@ const AllProducts = () => {
           </button>
         </header>
 
-        {/* شبكة المنتجات */}
         <div className="products-inventory-grid">
           {storeProducts.length > 0 ? (
             storeProducts.map((product) => (
               <div className="inventory-card" key={product.id}>
                 <div className="inventory-img-wrapper">
                   <img src={product.imgsrc} alt={product.title} />
-                  <div className="inventory-badge">proudcts</div>
+                  <div className="inventory-badge">In Stock</div>
                 </div>
                 <div className="inventory-details">
                   <h3 onClick={() => navigate(`/allproducts/${product.id}`)}>
