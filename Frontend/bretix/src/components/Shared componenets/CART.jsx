@@ -19,11 +19,14 @@ const Cart = () => {
   const [cartId, setCartId] = useState(null);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState("COD");
+
   const [currentLocation, setCurrentLocation] = useState(null);
   const token = localStorage.getItem("token");
   const [addressData, setAddressData] = useState({});
   const navigate = useNavigate();
   const [address, setAddress] = useState("Loading address...");
+  const [selAddressData, setSelAddressData] = useState({});
 
   useEffect(() => {
     axios
@@ -81,7 +84,37 @@ const Cart = () => {
       alert("Please select delivery location first!");
       return;
     }
-    navigate("/checkout");
+    if (selectedPayment === "COD") {
+      const cartId = localStorage.getItem("cartId");
+      axios
+        .put(
+          `http://localhost:5000/cart/complete/${cartId}`,
+          { payment_method: "COD" },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then((res) => {
+          localStorage.setItem(cartId, res.data.newCartId);
+          navigate("/Success");
+        })
+        .catch((err) => {
+          console.log("OrderFailed", err);
+        });
+    } else {
+      navigate("/checkout");
+    }
+  };
+
+  const handleSelLocationClick = async (lat, lng) => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+
+    const data = await response.json();
+    setSelAddressData(data.address);
+
+    (error) => {
+      console.error(error.message);
+    };
   };
 
   const handleLocationClick = () => {
@@ -108,6 +141,7 @@ const Cart = () => {
   };
 
   const handleMapClick = ({ lat, lng }) => {
+    handleSelLocationClick(lat, lng);
     setSelectedLocation({ lat, lng });
   };
 
@@ -119,9 +153,7 @@ const Cart = () => {
       );
       setShowLocationModal(false);
       alert(
-        `Location saved: ${selectedLocation.lat.toFixed(
-          4
-        )}, ${selectedLocation.lng.toFixed(4)}`
+        `Location saved:  ${selAddressData.country}, ${selAddressData.state} - ${selAddressData.road}`
       );
     }
   };
@@ -207,33 +239,42 @@ const Cart = () => {
               <span>${total.toFixed(2)}</span>
             </div>
 
-            <div className="payment-options">
-              <p>Payment Method</p>
-              <label className="radio-label">
-                <input
-                  type="radio"
-                  name="payment_method"
-                  value="COD"
-                  defaultChecked
-                />
-                <div className="radio-design">
-                  <Truck size={16} /> Cash on Delivery
-                </div>
-              </label>
-              <label className="radio-label">
-                <input type="radio" name="payment_method" value="Card" />
-                <div className="radio-design">
-                  <CreditCard size={16} /> Pay by card
-                </div>
-              </label>
-            </div>
+          <div className="payment-options">
+  <p>Payment Method</p>
+  <label className="radio-label">
+    <input
+      type="radio"
+      name="payment_method"
+      value="COD"
+      checked={selectedPayment === "COD"}
+      onChange={(e) => setSelectedPayment(e.target.value)}
+    />
+    <div className="radio-design">
+      <Truck size={16} /> Cash on Delivery
+    </div>
+  </label>
 
-            <button className="location-btn" onClick={handleLocationClick}>
-              Insert Location for Delivery
-            </button>
-            <button className="checkout-btn-final" onClick={confirmCheckout}>
-              Confirm Order
-            </button>
+  <label className="radio-label">
+    <input
+      type="radio"
+      name="payment_method"
+      value="Card"
+      checked={selectedPayment === "Card"}
+      onChange={(e) => setSelectedPayment(e.target.value)}
+    />
+    <div className="radio-design">
+      <CreditCard size={16} /> Pay by card
+    </div>
+  </label>
+</div>
+
+<button className="location-btn" onClick={handleLocationClick}>
+  Insert Location for Delivery
+</button>
+
+<button className="checkout-btn-final" onClick={confirmCheckout}>
+  {selectedPayment === "COD" ? "Confirm Order" : "Go to Payment"}
+</button>
           </div>
         </div>
       </div>
@@ -257,8 +298,8 @@ const Cart = () => {
               </p>
               {selectedLocation && (
                 <p className="selected-coords">
-                  Selected: {selectedLocation.lat.toFixed(4)},{" "}
-                  {selectedLocation.lng.toFixed(4)}
+                  Selected: {selAddressData.country}, {selAddressData.state} -
+                  {selAddressData.road}
                 </p>
               )}
               <div style={{ height: "400px", width: "100%" }}>
