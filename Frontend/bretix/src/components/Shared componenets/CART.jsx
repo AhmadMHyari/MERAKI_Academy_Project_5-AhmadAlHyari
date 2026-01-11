@@ -26,6 +26,7 @@ const Cart = () => {
   const [addressData, setAddressData] = useState({});
   const navigate = useNavigate();
   const [address, setAddress] = useState("Loading address...");
+  const [selAddressData, setSelAddressData] = useState({});
 
   useEffect(() => {
     axios
@@ -103,6 +104,19 @@ const Cart = () => {
     }
   };
 
+  const handleSelLocationClick = async (lat, lng) => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+
+    const data = await response.json();
+    setSelAddressData(data.address);
+
+    (error) => {
+      console.error(error.message);
+    };
+  };
+
   const handleLocationClick = () => {
     setShowLocationModal(true);
     if ("geolocation" in navigator) {
@@ -127,6 +141,7 @@ const Cart = () => {
   };
 
   const handleMapClick = ({ lat, lng }) => {
+    handleSelLocationClick(lat, lng);
     setSelectedLocation({ lat, lng });
   };
 
@@ -138,9 +153,7 @@ const Cart = () => {
       );
       setShowLocationModal(false);
       alert(
-        `Location saved: ${selectedLocation.lat.toFixed(
-          4
-        )}, ${selectedLocation.lng.toFixed(4)}`
+        `Location saved:  ${selAddressData.country}, ${selAddressData.state} - ${selAddressData.road}`
       );
     }
   };
@@ -285,8 +298,8 @@ const Cart = () => {
               </p>
               {selectedLocation && (
                 <p className="selected-coords">
-                  Selected: {selectedLocation.lat.toFixed(4)},{" "}
-                  {selectedLocation.lng.toFixed(4)}
+                  Selected: {selAddressData.country}, {selAddressData.state} -
+                  {selAddressData.road}
                 </p>
               )}
               <div style={{ height: "400px", width: "100%" }}>
