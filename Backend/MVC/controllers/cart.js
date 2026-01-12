@@ -351,6 +351,60 @@ const getCompletedOrders = async (req, res) => {
     });
   }
 };
+
+const getUserOrders = async (req, res) => {
+  const userId = req.token.user_id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  try {
+    const ordersQuery = `
+      SELECT 
+        cart.id as order_id,
+        cart.done_at,
+        COUNT(cart_products.id) as num_of_products,
+        SUM(cart_products.quantity * products.price) as total
+      FROM cart
+      INNER JOIN cart_products ON cart.id = cart_products.cart
+      INNER JOIN products ON cart_products.product = products.id
+      WHERE cart.users_id = $1 AND cart.is_deleted = true AND cart.done_at IS NOT NULL
+      GROUP BY cart.id, cart.done_at
+      ORDER BY cart.done_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    
+    const ordersResult = await pool.query(ordersQuery, [userId, limit, offset]);
+    
+    const countQuery = `
+      SELECT COUNT(DISTINCT cart.id) as total
+      FROM cart
+      WHERE cart.users_id = $1 AND cart.is_deleted = true AND cart.done_at IS NOT NULL
+    `;
+    
+    const countResult = await pool.query(countQuery, [userId]);
+    const totalOrders = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    res.status(200).json({
+      success: true,
+      orders: ordersResult.rows,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalOrders: totalOrders,
+        limit: limit
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching orders"
+    });
+  }
+};
 module.exports = {
   addToCart,
   getCartWereIsDeletedFalse,
@@ -359,5 +413,6 @@ module.exports = {
   updatedQuantity,
   checkoutPayment,
   getTotalSales,
-  getCompletedOrders
+  getCompletedOrders,
+  getUserOrders
 };

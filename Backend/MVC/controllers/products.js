@@ -138,15 +138,26 @@ const deleteProductById = async (req, res) => {
 
 const getTop10Products = async (req, res) => {
   try {
-    const result = await pool.query(`SELECT *
-      FROM products 
-      ORDER BY rate DESC NULLS LAST
-      LIMIT 10`);
+    const result = await pool.query(`
+      SELECT 
+        products.*,
+        COALESCE(SUM(cart_products.quantity), 0) as total_sold
+      FROM products
+      LEFT JOIN cart_products ON products.id = cart_products.product
+      LEFT JOIN cart ON cart_products.cart = cart.id 
+        AND cart.is_deleted = true 
+        AND cart.done_at IS NOT NULL
+      GROUP BY products.id
+      ORDER BY total_sold DESC
+      LIMIT 10
+    `);
     res.status(200).json({ success: true, result: result.rows });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 module.exports = {
   addNewProducts,
   getProductById,
