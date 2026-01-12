@@ -9,18 +9,17 @@ function Products() {
   const [category, setCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStores, setSelectedStores] = useState("");
-  const [search, setSearch] = useState(""); 
+  const [search, setSearch] = useState("");
   const [stores, setStores] = useState([]);
   const [toast, setToast] = useState({ show: false, message: "" });
   const [showDropDownCatagry, setShowDropDownCatagry] = useState(false);
   const [showDropDownStores, setShowDropDownStores] = useState(false);
 
-
   const location = useLocation();
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const searchTermFromUrl = queryParams.get("search") || "";
-    setSearch(searchTermFromUrl); 
+    setSearch(searchTermFromUrl);
   }, [location.search]);
 
   useEffect(() => {
@@ -50,7 +49,6 @@ function Products() {
     setSearch(newSearch);
   };
 
-
   const filteredProducts = products.filter((item) => {
     const matchCategory = selectedCategory
       ? item.categories_id == selectedCategory
@@ -65,7 +63,13 @@ function Products() {
     return matchCategory && matchStore && matchSearch;
   });
 
-  const storeIds = [...new Set(products.filter(p => !selectedCategory || p.categories_id == selectedCategory).map((p) => p.store_id))];
+  const storeIds = [
+    ...new Set(
+      products
+        .filter((p) => !selectedCategory || p.categories_id == selectedCategory)
+        .map((p) => p.store_id)
+    ),
+  ];
 
   const filteredStore = selectedCategory
     ? stores.filter((store) => storeIds.includes(store.id))
@@ -76,7 +80,6 @@ function Products() {
     setTimeout(() => setToast({ show: false, message: "" }), 3000);
   };
 
-
   const handleFlyAnimation = (e, imgsrc) => {
     const cart = document.getElementById("cart-icon-nav");
     if (!cart) return;
@@ -86,7 +89,8 @@ function Products() {
     flyingImg.className = "flying-product-premium";
 
     const rect = e.target.getBoundingClientRect();
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     flyingImg.style.left = `${rect.left + scrollLeft}px`;
@@ -96,8 +100,14 @@ function Products() {
     const cartRect = cart.getBoundingClientRect();
 
     requestAnimationFrame(() => {
-      flyingImg.style.setProperty("--target-x", `${cartRect.left + scrollLeft - rect.left}px`);
-      flyingImg.style.setProperty("--target-y", `${cartRect.top + scrollTop - rect.top}px`);
+      flyingImg.style.setProperty(
+        "--target-x",
+        `${cartRect.left + scrollLeft - rect.left}px`
+      );
+      flyingImg.style.setProperty(
+        "--target-y",
+        `${cartRect.top + scrollTop - rect.top}px`
+      );
       flyingImg.classList.add("is-flying");
     });
 
@@ -141,58 +151,57 @@ function Products() {
       {toast.show && (
         <div className="toast-premium">
           <span>{toast.message}</span>
-          <button onClick={() => setToast({ show: false, message: "" })}>✕</button>
+          <button onClick={() => setToast({ show: false, message: "" })}>
+            ✕
+          </button>
         </div>
       )}
 
-      
       <div className="filter-controls">
-        <button
-          className={selectedCategory === "" ? "active" : ""}
-          onClick={() => setShowDropDownCatagry(!showDropDownCatagry)}
-        >
-          {selectedCategory ? category.find(c => c.id == selectedCategory)?.name : "All Categories"}
-        </button>
+  
+  <div className="custom-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block' }}>
+    <div className={`custom-label ${selectedCategory === "" ? "active" : ""}`}>
+      {selectedCategory
+        ? category.find((c) => c.id == selectedCategory)?.name
+        : ""}
+    </div>
+    <select
+      className="category-dropdown-hidden"
+      value={selectedCategory}
+      onChange={(e) => setSelectedCategory(e.target.value)}
+      
+    >
+      <option value="">All Categories</option>
+      {category.map((cat) => (
+        <option key={cat.id} value={cat.id}>
+          {cat.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
-        {showDropDownCatagry && (
-          <select
-            className="category-dropdown"
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setShowDropDownCatagry(false);
-            }}
-          >
-            <option value="">All Categories</option>
-            {category.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-        )}
 
-        <button
-          className={selectedStores === "" ? "active" : ""}
-          onClick={() => setShowDropDownStores(!showDropDownStores)}
-        >
-          {selectedStores ? stores.find(s => s.id == selectedStores)?.title : "All Stores"}
-        </button>
-
-        {showDropDownStores && (
-          <select
-            className="stores-dropdown"
-            value={selectedStores}
-            onChange={(e) => {
-              setSelectedStores(e.target.value);
-              setShowDropDownStores(false);
-            }}
-          >
-            <option value="">All Stores</option>
-            {filteredStore.map((store) => (
-              <option key={store.id} value={store.id}>{store.title}</option>
-            ))}
-          </select>
-        )}
-      </div>
+  <div className="custom-dropdown-wrapper" style={{ position: 'relative', display: 'inline-block', marginLeft: '10px' }}>
+    <div className={`custom-label ${selectedStores === "" ? "active" : ""}`}>
+      {selectedStores
+        ? stores.find((s) => s.id == selectedStores)?.title
+        : ""}
+    </div>
+    <select
+      className="stores-dropdown-hidden"
+      value={selectedStores}
+      onChange={(e) => setSelectedStores(e.target.value)}
+      
+    >
+      <option value="">All Stores</option>
+      {filteredStore.map((store) => (
+        <option key={store.id} value={store.id}>
+          {store.title}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
 
       <div className="search-bar-container">
         <SearchBar
@@ -207,9 +216,13 @@ function Products() {
         <p className="sub-title">Eco Essentials Planet-Friendly</p>
         <h2 className="main-title">
           {search ? (
-            <>Results for: <span>"{search}"</span></>
+            <>
+              Results for: <span>"{search}"</span>
+            </>
           ) : (
-            <>Bestselling <span>✨ Products</span></>
+            <>
+              Bestselling <span>✨ Products</span>
+            </>
           )}
         </h2>
       </div>

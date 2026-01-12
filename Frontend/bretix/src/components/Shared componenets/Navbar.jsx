@@ -48,7 +48,7 @@ const Navbar = () => {
           <Search size={20} className="search-icon-inside" />
           <input 
             type="text" 
-            placeholder="Search Bretix Eco Products..." 
+            placeholder="Search Bretix Products..." 
             value={currentSearch}
             onChange={handleSearchChange}
             autoFocus={isSearchOpen}
@@ -89,27 +89,78 @@ const Navbar = () => {
           </button>
         )}
 
-        <div className="profile-dropdown-wrapper" ref={dropdownRef}>
-          <button className={`profile-circle-btn ${showDropdown ? "active" : ""}`} onClick={() => setShowDropdown(!showDropdown)}>
-            <span>PL</span>
-          </button>
-          {showDropdown && (
-            <div className="nav-dropdown-menu">
-              {role === null ? (
-                <div className="dropdown-item" onClick={() => { navigate("/Login"); setShowDropdown(false); }}><FaUser /> <span>Login</span></div>
-              ) : (
-                <>
-                  <div className="dropdown-item" onClick={() => { navigate("/profile"); setShowDropdown(false); }}><FaIdCard /> <span>My Profile</span></div>
-                  <div className="dropdown-item" onClick={() => { navigate("/change-password"); setShowDropdown(false); }}><FaKey /> <span>Change Password</span></div>
-                  <hr />
-                  <div className="dropdown-item logout-red" onClick={() => { localStorage.clear(); navigate("/"); setShowDropdown(false); window.location.reload(); }}>
-                    <FaSignOutAlt /> <span>Logout</span>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+      <div className="profile-dropdown-wrapper" ref={dropdownRef}>
+  <button
+    className={`profile-circle-btn ${role === null ? "login-btn" : ""} ${showDropdown ? "active" : ""}`}
+    onClick={() => {
+      if (role === null) {
+        navigate("/Login");
+      } else {
+        setShowDropdown(!showDropdown);
+      }
+    }}
+  >
+    {role === null ? (
+      <span>Login</span>
+    ) : (
+      <span>PL</span>
+    )}
+  </button>
+
+  {showDropdown && role !== null && (
+    <div className="nav-dropdown-menu">
+      <>
+        <div
+          className="dropdown-item"
+          onClick={() => {
+            navigate("/profile");
+            setShowDropdown(false);
+          }}
+        >
+          <FaIdCard /> <span>My Profile</span>
         </div>
+    {role === "2" && (
+                    <div className="dropdown-item" onClick={() => {navigate("/stores/StoreManagement"); setShowDropdown(false);}}>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => {
+                        navigate("/stores/StoreManagement");
+                        setShowDropdown(false);
+                      }}
+                    >
+                      <Store size={16} /> <span>Management</span>
+                    </div>
+                    </div>
+                  )}
+
+        <div
+          className="dropdown-item"
+          onClick={() => {
+            navigate("/change-password");
+            setShowDropdown(false);
+          }}
+        >
+          <FaKey /> <span>Change Password</span>
+        </div>
+
+        <hr />
+
+        <div
+          className="dropdown-item logout-red"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/");
+            setShowDropdown(false);
+            window.location.reload();
+          }}
+        >
+          <FaSignOutAlt /> <span>Logout</span>
+        </div>
+      </>
+    </div>
+  )}
+</div>
+
       </div>
     </nav>
   );
