@@ -1,6 +1,5 @@
 const { pool } = require("../models/db");
 
-pool;
 const addNewCategory = async (req, res) => {
   const { name, description, imgsrc } = req.body;
 

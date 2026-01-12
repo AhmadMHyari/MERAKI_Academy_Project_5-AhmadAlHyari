@@ -8,6 +8,7 @@ const {
   checkoutPayment,
   getTotalSales,
   getCompletedOrders,
+  getUserOrders
 } = require("../controllers/cart");
 const authentication = require("../middlewares/authentication");
 const authorization = require("../middlewares/authorization")
@@ -30,6 +31,7 @@ cartRouter.get("/totalsales",authentication, authorization(1), getTotalSales)
 cartRouter.get("/with-products", authentication, getCartWithProducts);
 cartRouter.patch("/:cartProductId", authentication, updatedQuantity);
 cartRouter.put("/complete/:cartId",authentication, checkoutPayment)
+cartRouter.get("/my-orders", authentication, getUserOrders);
 //========================
 
 module.exports = cartRouter;

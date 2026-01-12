@@ -483,9 +483,19 @@ const updateUserInformation = (req, res) => {
     date_of_birthday,
     email,
   } = req.body;
+  
   pool
     .query(
-      `UPDATE users SET firstName=$1,lastName=$2,age=$3,country=$4,phoneNumber=$5,date_of_birthday=$6,email=$7 WHERE id=$8 RETURNING *`,
+      `UPDATE users SET 
+        firstname=$1,
+        lastname=$2,
+        age=$3,
+        country=$4,
+        phonenumber=$5,
+        date_of_birthday=$6,
+        email=$7 
+      WHERE id=$8 
+      RETURNING *`,
       [
         firstName,
         lastName,
@@ -500,14 +510,15 @@ const updateUserInformation = (req, res) => {
     .then((result) => {
       res.status(201).json({
         success: true,
-        message: "user information update Succsesfly",
+        message: "user information updated successfully",
         result: result.rows,
       });
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).json({
         success: false,
-        message: "error  server",
+        message: "server error",
       });
     });
 };
