@@ -301,3 +301,8 @@ hr {
   transform: scale(0.9);
 }
 
+login-btn {
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-weight: 600;
+}

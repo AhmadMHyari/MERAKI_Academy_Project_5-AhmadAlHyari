@@ -36,7 +36,7 @@ const Footer = () => {
         <div className="footer-section contact">
           <h3>Contact Info</h3>
           <p>📍  Amman, Jordan</p>
-          <p>📞 +962775570312</p>
+          <p>📞 +962775570312<br />📞 +962795543706 <br />📞 +962779397090</p>
           <p>✉️ support@bretix.com</p>
         </div>
       </div>
