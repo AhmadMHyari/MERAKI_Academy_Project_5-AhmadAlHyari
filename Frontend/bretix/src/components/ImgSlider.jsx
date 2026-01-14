@@ -11,7 +11,7 @@ function ImgSlider() {
     {
       id: 1,
       URL: "https://images.pexels.com/photos/264636/pexels-photo-264636.jpeg",
-      title: "Shop Eco. Live Better 🌱",
+      title: "Bretix. Live Better 🌱",
       desc: "Discover eco-friendly stores offering organic food, sustainable products, and modern lifestyle essentials.",
       button: "Explore Stores",
       path: "/stores",
