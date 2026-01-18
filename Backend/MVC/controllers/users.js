@@ -151,51 +151,31 @@ const requestForgotPassword = async (req, res) => {
       });
     }
 
-      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-      
-      // SendGrid Email
-      const msg = {
-        to: email,
-        from: 'm.alshiekhqasem@gmail.com',
-        subject: 'Reset Password - Bretix',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #10b981;">Reset Your Password</h2>
-            <p>You requested to reset your password. Click the button below to proceed:</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetLink}" 
-                 style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                Reset Password
-              </a>
-            </div>
-            <p style="color: #666; font-size: 14px;">This link expires in 15 minutes.</p>
-            <p style="color: #666; font-size: 14px;">If you didn't request this, please ignore this email.</p>
-          </div>
-        `
-      };
+    const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: '15m' });
 
-      sgMail.send(msg)
-        .then(() => {
-          res.status(200).json({
-            success: true,
-            message: "Reset link sent to your email",
-          });
-        })
-        .catch((err) => {
-          console.log("FULL ERROR LOG:", err);
-          res.status(500).json({
-            success: false,
-            message: "Failed to send email",
-            error: err.message,
-          });
-        })
-    .catch((err) => {
-      res.status(500).json({
-        success: false,
-        message: "Server error",
-        error: err.message,
-      });
-    });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    
+    const msg = {
+      to: email,
+      from: 'm.alshiekhqasem@gmail.com',
+      subject: 'Reset Password - Bretix',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #10b981;">Reset Your Password</h2>
+          <p>You requested to reset your password. Click the button below to proceed:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetLink}" 
+               style="background-color: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              Reset Password
+            </a>
+          </div>
+          <p style="color: #666; font-size: 14px;">This link expires in 15 minutes.</p>
+          <p style="color: #666; font-size: 14px;">If you didn't request this, please ignore this email.</p>
+        </div>
+      `
+    };
+
+    await sgMail.send(msg);
 
     return res.status(200).json({
       success: true,
